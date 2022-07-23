@@ -24,7 +24,7 @@
   "contributors": [],
   "scripts": {
     "start": "node ./src/index.js",
-    "dev":"nodemon ./src/index.js"
+    "dev": "nodemon ./src/index.js"
   },
   "dependencies": {
     "axios": "^0.27.2",
@@ -38,6 +38,7 @@
     "joi": "^17.6.0",
     "mongodb": "^4.7.0",
     "nodemon": "^2.0.18",
+    "pg": "^8.7.3",
     "uuid": "^8.3.2"
   }
 }

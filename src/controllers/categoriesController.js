@@ -1,58 +1,33 @@
-import connection from '../dbStrategy/postgres.js';
-import joi from 'joi';
+import connection from "../dbStartegy/postgres.js";
 
 export async function getCategories(req, res) {
-  const { rows: categories } = await connection.query(`
-    SELECT categories.id, categories.name FROM categories
-  `);
-
-  res.send(categories);
-}
-
-export async function getPostById(req, res) {
-  const { id } = req.params;
-
-  const { rows: post } = await connection.query(
-    `
-      SELECT posts.titulo, posts.post, posts.id, users.nome FROM posts
-      JOIN user_posts
-      ON posts.id = user_posts.postid
-      JOIN users
-      ON users.id = user_posts.userid
-      WHERE posts.id = $1
-    `,
-    [id]
-  );
-
-  // query sem passar pelo javascrip
-  console.log(post);
-
-  const postJoin = {
-    ...post[0],
-    users: post.map(value => value.nome)
-  };
-
-  delete postJoin.nome;
-
-  res.send(postJoin);
-}
-
-export async function createCategorie(req, res) {
-  const newCategorie = req.body;
-
-  const categorieSchema = joi.object({
-    name: joi.string().required()
-  });
-
-  const { error } = categorieSchema.validate(newPost);
-
-  if (error) {
-    return res.sendStatus(422);
+  try {
+    const { rows: categories } = await connection.query(
+      "SELECT * FROM categories;"
+    );
+    res.send(categories);
+  } catch {
+    res.sendStatus(500);
   }
+}
 
-  await connection.query(
-    `INSERT INTO categories (name) VALUES ('${newCategorie.name}')`
-  );
+export async function addCategory(req, res) {
+  const { name } = req.body;
 
-  res.status(201).send('Categoria criada com sucesso');
+  try {
+    const { rows: categoryExist } = await connection.query(
+      "SELECT * FROM categories WHERE name = $1;",
+      [name]
+    );
+
+    if (categoryExist.length !== 0) {
+      return res.sendStatus(409);
+    }
+
+    await connection.query("INSERT INTO categories (name) VALUES ($1);", [name]);
+
+    res.sendStatus(201);
+  } catch {
+    res.sendStatus(500);
+  }
 }
