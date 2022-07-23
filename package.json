@@ -1,0 +1,43 @@
+{
+  "name": "boardcamp-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "license": "AGPL-version-3.0",
+  "private": false,
+  "engines": {
+    "node": ">= 14.0.0",
+    "npm": ">= 6.0.0"
+  },
+  "homepage": "",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "bugs": "",
+  "keywords": [],
+  "author": {
+    "name": "gui",
+    "email": "guimatiola@gmail.com"
+  },
+  "contributors": [],
+  "scripts": {
+    "start": "node ./src/index.js",
+    "dev":"nodemon ./src/index.js"
+  },
+  "dependencies": {
+    "axios": "^0.27.2",
+    "bcrypt": "^5.0.1",
+    "chalk": "^5.0.1",
+    "cors": "^2.8.5",
+    "dayjs": "^1.11.3",
+    "dotenv": "^16.0.1",
+    "es6": "^0.0.7",
+    "express": "^4.18.1",
+    "joi": "^17.6.0",
+    "mongodb": "^4.7.0",
+    "nodemon": "^2.0.18",
+    "uuid": "^8.3.2"
+  }
+}
