@@ -1,20 +1,26 @@
 import connection from "../dbStartegy/postgres.js";
+import moment from "moment";
 
 export async function getCustomers(req, res) {
   const { cpf } = req.query;
+  let findByCpf = "";
 
   try {
     if (cpf) {
-      const { rows: customers } = await connection.query(
-        `SELECT * FROM customers WHERE cpf ILIKE '${cpf}%';`
-      );
-      return res.send(customers);
-    } else {
-      const { rows: customers } = await connection.query(
-        `SELECT * FROM customers;`
-      );
-      return res.send(customers);
+      findByCpf = `WHERE cpf ILIKE '${cpf}%'`;
     }
+
+    const { rows: customers } = await connection.query(
+      `SELECT * FROM customers ${findByCpf};`
+    );
+
+    Object.keys(customers).forEach(function (key) {
+      customers[key].birthday = moment(customers.birthday)
+        .utc()
+        .format("YYYY-MM-DD");
+    });
+
+    return res.send(customers);
   } catch (error) {
     console.log(error);
     res.sendStatus(500);
@@ -23,7 +29,6 @@ export async function getCustomers(req, res) {
 
 export async function getCustomer(req, res) {
   const { id } = req.params;
-
   try {
     const { rows: customer } = await connection.query(
       `SELECT * FROM customers WHERE id = $1;`,
@@ -33,6 +38,10 @@ export async function getCustomer(req, res) {
     if (customer.length === 0) {
       return res.sendStatus(404);
     }
+
+    customer[0].birthday = moment(customer[0].birthday)
+      .utc()
+      .format("YYYY-MM-DD");
 
     return res.send(customer);
   } catch (error) {
