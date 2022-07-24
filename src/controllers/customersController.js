@@ -28,16 +28,8 @@ export async function getCustomers(req, res) {
 }
 
 export async function getCustomer(req, res) {
-  const { id } = req.params;
   try {
-    const { rows: customer } = await connection.query(
-      `SELECT * FROM customers WHERE id = $1;`,
-      [id]
-    );
-
-    if (customer.length === 0) {
-      return res.sendStatus(404);
-    }
+    const {customer} = res.locals;
 
     customer[0].birthday = moment(customer[0].birthday)
       .utc()
@@ -54,15 +46,6 @@ export async function addCustomer(req, res) {
   const { name, phone, cpf, birthday } = req.body;
 
   try {
-    const { rows: cpfExist } = await connection.query(
-      "SELECT * FROM customers WHERE cpf = $1;",
-      [cpf]
-    );
-
-    if (cpfExist.length !== 0) {
-      return res.sendStatus(409);
-    }
-
     await connection.query(
       `INSERT INTO customers (name, phone, cpf, birthday) VALUES ($1, $2, $3, $4);`,
       [name, phone, cpf, birthday]
@@ -80,15 +63,6 @@ export async function updateCustomer(req, res) {
   const { id } = req.params;
 
   try {
-    const { rows: cpfExist } = await connection.query(
-      "SELECT * FROM customers WHERE cpf = $1;",
-      [cpf]
-    );
-
-    if (cpfExist.length !== 0) {
-      return res.sendStatus(409);
-    }
-
     await connection.query(
       `UPDATE customers SET name=$1, phone=$2, cpf=$3, birthday=$4 WHERE id = $5`,
       [name, phone, cpf, birthday, id]
