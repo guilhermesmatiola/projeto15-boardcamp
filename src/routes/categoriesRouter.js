@@ -1,5 +1,5 @@
 import { getCategories, addCategory } from "../controllers/categoriesController.js";
-import { ValidateCategory } from "../middlewares/categoriesSchemaValidationMiddleware.js";
+import { ValidateCategory } from "../middlewares/categoriesValidationMiddleware.js";
 import { Router } from "express";
 
 const router = Router();
