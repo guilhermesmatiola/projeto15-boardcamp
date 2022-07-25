@@ -2,16 +2,25 @@ import connection from "../dbStartegy/postgres.js";
 import moment from "moment";
 
 export async function getCustomers(req, res) {
-  const { cpf } = req.query;
+  const { cpf, offset, limit, order } = req.query;
   let findByCpf = "";
+  let orderClause = "";
+  let offsetClause = "";
+  let limitClause = "";
 
   try {
-    if (cpf) {
-      findByCpf = `WHERE cpf ILIKE '${cpf}%'`;
-    }
+    cpf ? (findByCpf = `WHERE cpf ILIKE '${cpf}%'`) : "";
+    order ? (orderClause = `ORDER BY "${order}" ASC`) : "";
+    offset ? (offsetClause = `OFFSET ${offset}`) : "";
+    limit ? (limitClause = `LIMIT ${limit}`) : "";
 
     const { rows: customers } = await connection.query(
-      `SELECT * FROM customers ${findByCpf};`
+      `SELECT * FROM customers 
+      ${findByCpf}
+      ${orderClause}
+      ${offsetClause}
+      ${limitClause}
+      ;`
     );
 
     Object.keys(customers).forEach(function (key) {
@@ -29,7 +38,7 @@ export async function getCustomers(req, res) {
 
 export async function getCustomer(req, res) {
   try {
-    const {customer} = res.locals;
+    const { customer } = res.locals;
 
     customer[0].birthday = moment(customer[0].birthday)
       .utc()
@@ -47,7 +56,12 @@ export async function addCustomer(req, res) {
 
   try {
     await connection.query(
-      `INSERT INTO customers (name, phone, cpf, birthday) VALUES ($1, $2, $3, $4);`,
+      `INSERT INTO customers (
+        name, 
+        phone, 
+        cpf, 
+        birthday) 
+      VALUES ($1, $2, $3, $4);`,
       [name, phone, cpf, birthday]
     );
 
@@ -64,7 +78,9 @@ export async function updateCustomer(req, res) {
 
   try {
     await connection.query(
-      `UPDATE customers SET name=$1, phone=$2, cpf=$3, birthday=$4 WHERE id = $5`,
+      `UPDATE customers 
+      SET name=$1, phone=$2, cpf=$3, birthday=$4 
+      WHERE id = $5`,
       [name, phone, cpf, birthday, id]
     );
 
